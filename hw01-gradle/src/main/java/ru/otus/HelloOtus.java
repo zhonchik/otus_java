@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.HashMap;
 
 
-public class App {
+public class HelloOtus {
     public static void main(String... args) {
         HashMap<String, String> example = Maps.newHashMap();
         example.put("hello", "otus");
