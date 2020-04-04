@@ -15,11 +15,8 @@ shadowJar {
     archiveBaseName.set('hw01-gradle-app')
     archiveVersion.set('0.1')
     archiveClassifier.set('')
-    manifest {
-        attributes 'Main-Class': 'ru.otus.App'
-    }
 }
 
-mainClassName = 'ru.otus.App'
+mainClassName = 'ru.otus.HelloOtus'
 
 tasks.build.dependsOn tasks.shadowJar
