@@ -14,10 +14,9 @@ public class CheckDiyArrayList {
 
         for (int i = 0; i < listSize; i++) {
             src.add((int) (Math.random() * listSize));
+            dst.add(0);
         }
-
-        Collections.fill(dst, 0);
-        System.out.println(dst);
+        System.out.println(src);
 
         Collections.addAll(dst, 3, 9, 5);
         System.out.println(dst);

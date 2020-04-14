@@ -8,12 +8,16 @@ class DIYarrayList<E> implements List<E> {
 
     private Object[] innerArray;
 
+    private static int defaultCapacity = 10;
+
+    private int listSize = 0;
+
     public DIYarrayList(int initialCapacity) {
         this.innerArray = new Object[initialCapacity];
     }
 
     public DIYarrayList() {
-        innerArray = new Object[0];
+        innerArray = new Object[defaultCapacity];
     }
 
     private class DIYListItr implements ListIterator<E> {
@@ -28,11 +32,13 @@ class DIYarrayList<E> implements List<E> {
         @SuppressWarnings("unchecked")
         public E next() {
             iterIndex++;
+            checkIndex(iterIndex);
             return (E) innerArray[iterIndex];
         }
 
         @Override
         public void set(E e) {
+            checkIndex(iterIndex);
             innerArray[iterIndex] = e;
         }
 
@@ -72,41 +78,50 @@ class DIYarrayList<E> implements List<E> {
         }
     }
 
+    private void ensureFits(int index) {
+        int previousLength = innerArray.length;
+        if (index >= previousLength) {
+            innerArray = Arrays.copyOf(innerArray, previousLength * 2, Object[].class);
+        }
+    }
+
+    private void checkIndex(int index) {
+        if (index < 0 || index >= listSize) {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
     @Override
     public boolean add(E e) {
-        int previousLength = innerArray.length;
-        innerArray = Arrays.copyOf(innerArray, previousLength + 1, Object[].class);
-        innerArray[previousLength] = e;
+        ensureFits(listSize);
+        innerArray[listSize] = e;
+        listSize++;
         return true;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public E get(int index) {
-        if (index < 0 || index >= innerArray.length) {
-            throw new IndexOutOfBoundsException();
-        }
+        checkIndex(index);
         return (E) innerArray[index];
     }
 
     @Override
     public E set(int index, E element) {
-        if (index < 0 || index >= innerArray.length) {
-            throw new IndexOutOfBoundsException();
-        }
+        checkIndex(index);
         innerArray[index] = element;
         return element;
     }
 
     @Override
     public int size() {
-        return innerArray.length;
+        return listSize;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void sort(Comparator<? super E> c) {
-        Arrays.sort((E[]) innerArray, 0, innerArray.length, c);
+        Arrays.sort((E[]) innerArray, 0, listSize, c);
     }
 
     @Override
@@ -216,6 +231,6 @@ class DIYarrayList<E> implements List<E> {
 
     @Override
     public String toString() {
-        return Arrays.toString(innerArray);
+        return Arrays.toString(Arrays.copyOf(innerArray, listSize, Object[].class));
     }
 }
