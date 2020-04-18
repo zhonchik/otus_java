@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow'
+}
+
+sourceCompatibility = JavaVersion.VERSION_13
+targetCompatibility = JavaVersion.VERSION_13
+
+shadowJar {
+    archiveBaseName.set('hw06-reflection-app')
+    archiveVersion.set('0.1')
+    archiveClassifier.set('')
+}
+
+mainClassName = 'ru.otus.CheckReflection'
+
+tasks.build.dependsOn tasks.shadowJar
