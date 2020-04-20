@@ -19,7 +19,7 @@ public class TestRunner {
 
     public TestRunner(String testClass) throws ClassNotFoundException, IllegalArgumentException {
         clazz = Class.forName(testClass);
-        if (clazz.getAnnotationsByType(Test.class).length == 0) {
+        if (!clazz.isAnnotationPresent(Test.class)) {
             throw new IllegalArgumentException(String.format("%s has no @Test annotation", clazz));
         }
 
@@ -28,13 +28,13 @@ public class TestRunner {
             updateMethods(After.class, method, afterMethods);
             updateMethods(Test.class, method, testMethods);
         }
-        if (testMethods.size() == 0) {
+        if (testMethods.isEmpty()) {
             throw new IllegalArgumentException(String.format("%s has no methods with @Test annotation", clazz));
         }
     }
 
     private static <T extends Annotation> void updateMethods(Class<T> annotation, Method method, List<Method> methods) {
-        if (method.getAnnotationsByType(annotation).length > 0) {
+        if (method.isAnnotationPresent(annotation)) {
             methods.add(method);
         }
     }
