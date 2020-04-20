@@ -1,11 +1,10 @@
 package ru.otus;
 
+import ru.otus.ReflectionHelper.ReflectionHelper;
 import ru.otus.annotations.After;
 import ru.otus.annotations.Before;
 import ru.otus.annotations.Test;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,18 +23,12 @@ public class TestRunner {
         }
 
         for (Method method: clazz.getMethods()) {
-            updateMethods(Before.class, method, beforeMethods);
-            updateMethods(After.class, method, afterMethods);
-            updateMethods(Test.class, method, testMethods);
+            ReflectionHelper.updateMethods(Before.class, method, beforeMethods);
+            ReflectionHelper.updateMethods(After.class, method, afterMethods);
+            ReflectionHelper.updateMethods(Test.class, method, testMethods);
         }
         if (testMethods.isEmpty()) {
             throw new IllegalArgumentException(String.format("%s has no methods with @Test annotation", clazz));
-        }
-    }
-
-    private static <T extends Annotation> void updateMethods(Class<T> annotation, Method method, List<Method> methods) {
-        if (method.isAnnotationPresent(annotation)) {
-            methods.add(method);
         }
     }
 
@@ -49,9 +42,9 @@ public class TestRunner {
             String testName = testMethod.getName();
             try {
                 Object object = clazz.getConstructor().newInstance();
-                invokeMethods(object, beforeMethods);
+                ReflectionHelper.invokeMethods(object, beforeMethods);
                 testMethod.invoke(object);
-                invokeMethods(object, afterMethods);
+                ReflectionHelper.invokeMethods(object, afterMethods);
                 System.out.printf("%-20s OK%n", testName);
                 successCount ++;
             } catch (Exception e) {
@@ -71,9 +64,4 @@ public class TestRunner {
         );
     }
 
-    private static void invokeMethods(Object object, List<Method> methods) throws Exception {
-        for (Method m: methods) {
-            m.invoke(object);
-        }
-    }
 }
