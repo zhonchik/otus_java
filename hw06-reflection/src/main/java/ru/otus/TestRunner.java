@@ -61,6 +61,24 @@ public class TestRunner {
         public List<MethodTestResult> getMethodTestResults() {
             return methodTestResults;
         }
+
+        private int getMethodCount(Status status) {
+            int count = 0;
+            for (MethodTestResult method: methodTestResults) {
+                if (method.getStatus() == status) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public int getSuccessCount() {
+            return getMethodCount(Status.SUCCESS);
+        }
+
+        public int getFailedCount() {
+            return getMethodCount(Status.FAILED);
+        }
     }
 
     public TestRunner(String testClass) throws ClassNotFoundException, IllegalArgumentException {
