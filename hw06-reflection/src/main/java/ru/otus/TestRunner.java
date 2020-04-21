@@ -16,6 +16,53 @@ public class TestRunner {
     private List<Method> afterMethods = new ArrayList();
     private List<Method> testMethods = new ArrayList();
 
+    public enum Status {
+        SUCCESS,
+        FAILED;
+    }
+
+    public class MethodTestResult {
+        private String methodName;
+        private Status status;
+        private Exception exception;
+
+        public MethodTestResult(String methodName, Status status, Exception exception) {
+            this.methodName = methodName;
+            this.status = status;
+            this.exception = exception;
+        }
+
+        public String getMethodName() {
+            return methodName;
+        }
+
+        public Status getStatus() {
+            return status;
+        }
+
+        public Exception getException() {
+            return exception;
+        }
+    }
+
+    public class TestResult {
+        private String className;
+        private List<MethodTestResult> methodTestResults;
+
+        public TestResult(String className, List<MethodTestResult> methodTestResults) {
+            this.className = className;
+            this.methodTestResults = methodTestResults;
+        }
+
+        public String getClassName() {
+            return className;
+        }
+
+        public List<MethodTestResult> getMethodTestResults() {
+            return methodTestResults;
+        }
+    }
+
     public TestRunner(String testClass) throws ClassNotFoundException, IllegalArgumentException {
         clazz = Class.forName(testClass);
         if (!clazz.isAnnotationPresent(Test.class)) {
@@ -32,12 +79,9 @@ public class TestRunner {
         }
     }
 
-    public void run(boolean printStackTrace) {
+    public TestResult run() {
+        List<MethodTestResult> methodResults = new ArrayList();
 
-        System.out.printf("Running %d tests for: %s%n", testMethods.size(), clazz.getSimpleName());
-
-        int successCount = 0;
-        int failedCount = 0;
         for (Method testMethod: testMethods) {
             String testName = testMethod.getName();
             try {
@@ -45,14 +89,33 @@ public class TestRunner {
                 ReflectionHelper.invokeMethods(object, beforeMethods);
                 testMethod.invoke(object);
                 ReflectionHelper.invokeMethods(object, afterMethods);
-                System.out.printf("%-20s OK%n", testName);
-                successCount ++;
+                methodResults.add(new MethodTestResult(testName, Status.SUCCESS, null));
             } catch (Exception e) {
-                if (printStackTrace) {
-                    e.printStackTrace();
+                methodResults.add(new MethodTestResult(testName, Status.FAILED, e));
+            }
+        }
+        return new TestResult(clazz.getSimpleName(), methodResults);
+    }
+
+    public static void displayResults(TestResult result) {
+        int successCount = 0;
+        int failedCount = 0;
+
+        System.out.printf("Test results for: %s%n", result.getClassName());
+
+        for (MethodTestResult methodResult: result.getMethodTestResults()) {
+            switch (methodResult.getStatus()) {
+                case SUCCESS: {
+                    successCount++;
+                    System.out.printf("%-20s OK%n", methodResult.getMethodName());
+                    break;
                 }
-                System.out.printf("%-20s FAILED%n", testName);
-                failedCount++;
+                case FAILED: {
+                    failedCount++;
+                    String exception = methodResult.getException().getCause().getClass().getSimpleName();
+                    System.out.printf("%-20s FAILED WITH EXCEPTION %s%n", methodResult.getMethodName(), exception);
+                    break;
+                }
             }
         }
 
@@ -63,5 +126,4 @@ public class TestRunner {
                 successCount + failedCount
         );
     }
-
 }

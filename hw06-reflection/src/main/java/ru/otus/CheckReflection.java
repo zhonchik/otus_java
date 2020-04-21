@@ -4,16 +4,15 @@ package ru.otus;
 public class CheckReflection {
 
     public static void main(String... args) throws ClassNotFoundException {
-        boolean printStackTrace = false;
-        new TestRunner("ru.otus.tests.TestAllFeatures").run(printStackTrace);
-        new TestRunner("ru.otus.tests.TestBeforeOnly").run(printStackTrace);
-        new TestRunner("ru.otus.tests.TestAfterOnly").run(printStackTrace);
+        TestRunner.displayResults(new TestRunner("ru.otus.tests.TestAllFeatures").run());
+        TestRunner.displayResults(new TestRunner("ru.otus.tests.TestBeforeOnly").run());
+        TestRunner.displayResults(new TestRunner("ru.otus.tests.TestAfterOnly").run());
 
         try {
-            new TestRunner("ru.otus.tests.TestIsNotTest").run(printStackTrace);
+            new TestRunner("ru.otus.tests.TestIsNotTest").run();
         } catch (IllegalArgumentException e) {}
         try {
-            new TestRunner("ru.otus.tests.TestNoTests").run(printStackTrace);
+            new TestRunner("ru.otus.tests.TestNoTests").run();
         } catch (IllegalArgumentException e) {}
     }
 }
