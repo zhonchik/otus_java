@@ -86,9 +86,13 @@ public class TestRunner {
             String testName = testMethod.getName();
             try {
                 Object object = clazz.getConstructor().newInstance();
-                ReflectionHelper.invokeMethods(object, beforeMethods);
-                testMethod.invoke(object);
-                ReflectionHelper.invokeMethods(object, afterMethods);
+                try {
+                    ReflectionHelper.invokeMethods(object, beforeMethods);
+                    testMethod.invoke(object);
+                }
+                finally {
+                    ReflectionHelper.invokeMethods(object, afterMethods);
+                }
                 methodResults.add(new MethodTestResult(testName, Status.SUCCESS, null));
             } catch (Exception e) {
                 methodResults.add(new MethodTestResult(testName, Status.FAILED, e));
