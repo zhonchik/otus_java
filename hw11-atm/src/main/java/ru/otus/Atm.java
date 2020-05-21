@@ -8,19 +8,20 @@ import java.util.Map;
 
 public class Atm {
     List<MutableCurrencyBundle> cells = new ArrayList<>();
-    Map<Integer, MutableCurrencyBundle> denominationToCell = new HashMap<>();
+    Map<Denomination, MutableCurrencyBundle> denominationToCell = new HashMap<>();
 
     public static Builder newBuilder() {
         return new Atm().new Builder();
     }
 
     public class Builder {
-        private Builder(){}
+        private Builder() {
+        }
 
         public Builder addCell(MutableCurrencyBundle cell) throws Exception {
             var denomination = cell.getBankNoteDenomination();
             if (denominationToCell.containsKey(denomination)) {
-                throw new Exception(String.format("ATM already has cell with denomination of %d", denomination));
+                throw new Exception(String.format("ATM already has cell with denomination of %s", denomination));
             }
             Atm.this.cells.add(cell);
             Atm.this.denominationToCell.put(cell.getBankNoteDenomination(), cell);
@@ -28,14 +29,16 @@ public class Atm {
         }
 
         public Atm build() {
-            Atm.this.cells.sort(Comparator.comparingInt(MutableCurrencyBundle::getBankNoteDenomination).reversed());
+            Atm.this.cells.sort(Comparator.<MutableCurrencyBundle>comparingInt(
+                    c -> c.getBankNoteDenomination().getValue()
+            ).reversed());
             return Atm.this;
         }
     }
 
     public Currency depositCurrency(Currency currency) {
         var declinedCurrencyBuilder = Currency.newBuilder();
-        for (var bundle: currency.getBundles()) {
+        for (var bundle : currency.getBundles()) {
             var denomination = bundle.getBankNoteDenomination();
             var cell = denominationToCell.get(denomination);
             if (cell == null) {
@@ -51,8 +54,9 @@ public class Atm {
         var currencyToReceiveBuilder = Currency.newBuilder();
         for (var cell : cells) {
             var denomination = cell.getBankNoteDenomination();
-            var count = Integer.min(amount / denomination, cell.getBankNotesCount());
-            amount -= denomination * count;
+            var denominationValue = denomination.getValue();
+            var count = Integer.min(amount / denominationValue, cell.getBankNotesCount());
+            amount -= denominationValue * count;
             currencyToReceiveBuilder.addBundle(new CurrencyBundle(denomination, count));
         }
 
@@ -61,7 +65,7 @@ public class Atm {
         }
 
         var currencyToReceive = currencyToReceiveBuilder.build();
-        for (var bundle: currencyToReceive.getBundles()) {
+        for (var bundle : currencyToReceive.getBundles()) {
             var cell = denominationToCell.get(bundle.getBankNoteDenomination());
             cell.receiveBankNotes(bundle.getBankNotesCount());
         }
@@ -71,8 +75,8 @@ public class Atm {
 
     public int getAmount() {
         int amount = 0;
-        for (var cell: cells) {
-            amount += cell.getBankNoteDenomination() * cell.getBankNotesCount();
+        for (var cell : cells) {
+            amount += cell.getBankNoteDenomination().getValue() * cell.getBankNotesCount();
         }
         return amount;
     }

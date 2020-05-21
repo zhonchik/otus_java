@@ -5,15 +5,15 @@ package ru.otus;
  */
 public class CurrencyBundle {
 
-    int bankNoteDenomination = 0;
-    int bankNotesCount = 0;
+    Denomination bankNoteDenomination;
+    int bankNotesCount;
 
-    public CurrencyBundle(int bankNoteDenomination, int bankNotesCount) {
+    public CurrencyBundle(Denomination bankNoteDenomination, int bankNotesCount) {
         this.bankNoteDenomination = bankNoteDenomination;
         this.bankNotesCount = bankNotesCount;
     }
 
-    public int getBankNoteDenomination() {
+    public Denomination getBankNoteDenomination() {
         return bankNoteDenomination;
     }
 
@@ -22,6 +22,6 @@ public class CurrencyBundle {
     }
 
     public String toString() {
-        return String.format("Bundle(%d: %d)", bankNoteDenomination, bankNotesCount);
+        return String.format("Bundle(%s: %d)", bankNoteDenomination.name(), bankNotesCount);
     }
 }

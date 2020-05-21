@@ -2,7 +2,7 @@ package ru.otus;
 
 public class MutableCurrencyBundle extends CurrencyBundle {
 
-    public MutableCurrencyBundle(int bankNoteDenomination, int bankNotesCount) {
+    public MutableCurrencyBundle(Denomination bankNoteDenomination, int bankNotesCount) {
         super(bankNoteDenomination, bankNotesCount);
     }
 
