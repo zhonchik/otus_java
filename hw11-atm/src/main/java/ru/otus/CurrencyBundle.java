@@ -5,7 +5,7 @@ package ru.otus;
  */
 public class CurrencyBundle {
 
-    Denomination bankNoteDenomination;
+    private final Denomination bankNoteDenomination;
     int bankNotesCount;
 
     public CurrencyBundle(Denomination bankNoteDenomination, int bankNotesCount) {

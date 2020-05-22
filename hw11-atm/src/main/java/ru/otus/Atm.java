@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Atm {
-    List<MutableCurrencyBundle> cells = new ArrayList<>();
-    Map<Denomination, MutableCurrencyBundle> denominationToCell = new HashMap<>();
+    private final List<MutableCurrencyBundle> cells = new ArrayList<>();
+    private final Map<Denomination, MutableCurrencyBundle> denominationToCell = new HashMap<>();
 
     public static Builder newBuilder() {
         return new Atm().new Builder();
