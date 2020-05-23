@@ -1,14 +1,10 @@
 package ru.otus;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
+import java.util.TreeMap;
 
 public class Atm {
-    private final List<MutableCurrencyBundle> cells = new ArrayList<>();
-    private final Map<Denomination, MutableCurrencyBundle> denominationToCell = new HashMap<>();
+    private final TreeMap<Denomination, MutableCurrencyBundle> cells = new TreeMap<>(Collections.reverseOrder());
 
     public static Builder newBuilder() {
         return new Atm().new Builder();
@@ -20,18 +16,14 @@ public class Atm {
 
         public Builder addCell(MutableCurrencyBundle cell) throws Exception {
             var denomination = cell.getBankNoteDenomination();
-            if (denominationToCell.containsKey(denomination)) {
+            if (cells.containsKey(denomination)) {
                 throw new Exception(String.format("ATM already has cell with denomination of %s", denomination));
             }
-            Atm.this.cells.add(cell);
-            Atm.this.denominationToCell.put(cell.getBankNoteDenomination(), cell);
+            Atm.this.cells.put(cell.getBankNoteDenomination(), cell);
             return this;
         }
 
         public Atm build() {
-            Atm.this.cells.sort(Comparator.<MutableCurrencyBundle>comparingInt(
-                    c -> c.getBankNoteDenomination().getValue()
-            ).reversed());
             return Atm.this;
         }
     }
@@ -40,7 +32,7 @@ public class Atm {
         var declinedCurrencyBuilder = Currency.newBuilder();
         for (var bundle : currency.getBundles()) {
             var denomination = bundle.getBankNoteDenomination();
-            var cell = denominationToCell.get(denomination);
+            var cell = cells.get(denomination);
             if (cell == null) {
                 declinedCurrencyBuilder.addBundle(bundle);
                 continue;
@@ -52,7 +44,7 @@ public class Atm {
 
     public Currency receiveCurrency(int amount) throws Exception {
         var currencyToReceiveBuilder = Currency.newBuilder();
-        for (var cell : cells) {
+        for (var cell : cells.values()) {
             var denomination = cell.getBankNoteDenomination();
             var denominationValue = denomination.getValue();
             var count = Integer.min(amount / denominationValue, cell.getBankNotesCount());
@@ -66,7 +58,7 @@ public class Atm {
 
         var currencyToReceive = currencyToReceiveBuilder.build();
         for (var bundle : currencyToReceive.getBundles()) {
-            var cell = denominationToCell.get(bundle.getBankNoteDenomination());
+            var cell = cells.get(bundle.getBankNoteDenomination());
             cell.receiveBankNotes(bundle.getBankNotesCount());
         }
 
@@ -75,7 +67,7 @@ public class Atm {
 
     public int getAmount() {
         int amount = 0;
-        for (var cell : cells) {
+        for (var cell : cells.values()) {
             amount += cell.getBankNoteDenomination().getValue() * cell.getBankNotesCount();
         }
         return amount;
