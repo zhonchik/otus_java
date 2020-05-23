@@ -16,7 +16,7 @@ public class CheckAtm {
         var money = new ArrayList<MoneyBundle>();
         money.add(new MoneyBundle(Denomination.D500, 55));
         money.add(new MoneyBundle(Denomination.D100, 333));
-        atm.depositMoney(money);
+        System.out.println(atm.depositMoney(money));
         System.out.println(atm);
         System.out.println(atm.getAmount());
 

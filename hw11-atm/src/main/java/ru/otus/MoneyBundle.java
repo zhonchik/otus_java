@@ -21,10 +21,6 @@ public class MoneyBundle {
         return bankNotesCount;
     }
 
-    public String toString() {
-        return String.format("Bundle(%s: %d)", bankNoteDenomination.name(), bankNotesCount);
-    }
-
     public void depositBankNotes(int count) {
         bankNotesCount += count;
     }
@@ -34,5 +30,9 @@ public class MoneyBundle {
             throw new Exception(String.format("%s has no such bank notes count: %d", this, count));
         }
         bankNotesCount -= count;
+    }
+
+    public String toString() {
+        return String.format("Bundle(%s: %d)", bankNoteDenomination.name(), bankNotesCount);
     }
 }
