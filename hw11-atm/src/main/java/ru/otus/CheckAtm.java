@@ -1,6 +1,8 @@
 package ru.otus;
 
 
+import java.util.ArrayList;
+
 public class CheckAtm {
     public static void main(String... args) throws Exception {
         var atm = Atm.newBuilder()
@@ -11,11 +13,10 @@ public class CheckAtm {
         System.out.println(atm);
         System.out.println(atm.getAmount());
 
-        atm.depositCurrency(Currency.newBuilder()
-                .addBundle(new CurrencyBundle(Denomination.D500, 55))
-                .addBundle(new CurrencyBundle(Denomination.D100, 333))
-                .build()
-        );
+        var money = new ArrayList<CurrencyBundle>();
+        money.add(new CurrencyBundle(Denomination.D500, 55));
+        money.add(new CurrencyBundle(Denomination.D100, 333));
+        atm.depositCurrency(money);
         System.out.println(atm);
         System.out.println(atm.getAmount());
 

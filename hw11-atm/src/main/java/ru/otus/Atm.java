@@ -1,6 +1,8 @@
 package ru.otus;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.TreeMap;
 
 public class Atm {
@@ -28,36 +30,35 @@ public class Atm {
         }
     }
 
-    public Currency depositCurrency(Currency currency) {
-        var declinedCurrencyBuilder = Currency.newBuilder();
-        for (var bundle : currency.getBundles()) {
+    public List<CurrencyBundle> depositCurrency(List<CurrencyBundle> currency) {
+        var declinedCurrency = new ArrayList<CurrencyBundle>();
+        for (var bundle : currency) {
             var denomination = bundle.getBankNoteDenomination();
             var cell = cells.get(denomination);
             if (cell == null) {
-                declinedCurrencyBuilder.addBundle(bundle);
+                declinedCurrency.add(bundle);
                 continue;
             }
             cell.depositBankNotes(bundle.getBankNotesCount());
         }
-        return declinedCurrencyBuilder.build();
+        return declinedCurrency;
     }
 
-    public Currency receiveCurrency(int amount) throws Exception {
-        var currencyToReceiveBuilder = Currency.newBuilder();
+    public List<CurrencyBundle> receiveCurrency(int amount) throws Exception {
+        var currencyToReceive = new ArrayList<CurrencyBundle>();
         for (var cell : cells.values()) {
             var denomination = cell.getBankNoteDenomination();
             var denominationValue = denomination.getValue();
             var count = Integer.min(amount / denominationValue, cell.getBankNotesCount());
             amount -= denominationValue * count;
-            currencyToReceiveBuilder.addBundle(new CurrencyBundle(denomination, count));
+            currencyToReceive.add(new CurrencyBundle(denomination, count));
         }
 
         if (amount > 0) {
             throw new Exception("Not enough money");
         }
 
-        var currencyToReceive = currencyToReceiveBuilder.build();
-        for (var bundle : currencyToReceive.getBundles()) {
+        for (var bundle : currencyToReceive) {
             var cell = cells.get(bundle.getBankNoteDenomination());
             cell.receiveBankNotes(bundle.getBankNotesCount());
         }
