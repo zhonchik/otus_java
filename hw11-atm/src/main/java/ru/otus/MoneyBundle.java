@@ -1,14 +1,14 @@
 package ru.otus;
 
 /**
- * CurrencyBundle represents group of bank notes with same denomination
+ * MoneyBundle represents group of bank notes with same denomination
  */
-public class CurrencyBundle {
+public class MoneyBundle {
 
     private final Denomination bankNoteDenomination;
     int bankNotesCount;
 
-    public CurrencyBundle(Denomination bankNoteDenomination, int bankNotesCount) {
+    public MoneyBundle(Denomination bankNoteDenomination, int bankNotesCount) {
         this.bankNoteDenomination = bankNoteDenomination;
         this.bankNotesCount = bankNotesCount;
     }

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 public class Atm {
-    private final TreeMap<Denomination, CurrencyBundle> cells = new TreeMap<>(Collections.reverseOrder());
+    private final TreeMap<Denomination, MoneyBundle> cells = new TreeMap<>(Collections.reverseOrder());
 
     public static Builder newBuilder() {
         return new Atm().new Builder();
@@ -16,7 +16,7 @@ public class Atm {
         private Builder() {
         }
 
-        public Builder addCell(CurrencyBundle cell) throws Exception {
+        public Builder addCell(MoneyBundle cell) throws Exception {
             var denomination = cell.getBankNoteDenomination();
             if (cells.containsKey(denomination)) {
                 throw new Exception(String.format("ATM already has cell with denomination of %s", denomination));
@@ -30,40 +30,40 @@ public class Atm {
         }
     }
 
-    public List<CurrencyBundle> depositCurrency(List<CurrencyBundle> currency) {
-        var declinedCurrency = new ArrayList<CurrencyBundle>();
-        for (var bundle : currency) {
+    public List<MoneyBundle> depositMoney(List<MoneyBundle> money) {
+        var declinedMoney = new ArrayList<MoneyBundle>();
+        for (var bundle : money) {
             var denomination = bundle.getBankNoteDenomination();
             var cell = cells.get(denomination);
             if (cell == null) {
-                declinedCurrency.add(bundle);
+                declinedMoney.add(bundle);
                 continue;
             }
             cell.depositBankNotes(bundle.getBankNotesCount());
         }
-        return declinedCurrency;
+        return declinedMoney;
     }
 
-    public List<CurrencyBundle> receiveCurrency(int amount) throws Exception {
-        var currencyToReceive = new ArrayList<CurrencyBundle>();
+    public List<MoneyBundle> receiveMoney(int amount) throws Exception {
+        var moneyToReceive = new ArrayList<MoneyBundle>();
         for (var cell : cells.values()) {
             var denomination = cell.getBankNoteDenomination();
             var denominationValue = denomination.getValue();
             var count = Integer.min(amount / denominationValue, cell.getBankNotesCount());
             amount -= denominationValue * count;
-            currencyToReceive.add(new CurrencyBundle(denomination, count));
+            moneyToReceive.add(new MoneyBundle(denomination, count));
         }
 
         if (amount > 0) {
             throw new Exception("Not enough money");
         }
 
-        for (var bundle : currencyToReceive) {
+        for (var bundle : moneyToReceive) {
             var cell = cells.get(bundle.getBankNoteDenomination());
             cell.receiveBankNotes(bundle.getBankNotesCount());
         }
 
-        return currencyToReceive;
+        return moneyToReceive;
     }
 
     public int getAmount() {
