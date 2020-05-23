@@ -24,4 +24,15 @@ public class CurrencyBundle {
     public String toString() {
         return String.format("Bundle(%s: %d)", bankNoteDenomination.name(), bankNotesCount);
     }
+
+    public void depositBankNotes(int count) {
+        bankNotesCount += count;
+    }
+
+    public void receiveBankNotes(int count) throws Exception {
+        if (count > bankNotesCount) {
+            throw new Exception(String.format("%s has no such bank notes count: %d", this, count));
+        }
+        bankNotesCount -= count;
+    }
 }

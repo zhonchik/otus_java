@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.TreeMap;
 
 public class Atm {
-    private final TreeMap<Denomination, MutableCurrencyBundle> cells = new TreeMap<>(Collections.reverseOrder());
+    private final TreeMap<Denomination, CurrencyBundle> cells = new TreeMap<>(Collections.reverseOrder());
 
     public static Builder newBuilder() {
         return new Atm().new Builder();
@@ -14,7 +14,7 @@ public class Atm {
         private Builder() {
         }
 
-        public Builder addCell(MutableCurrencyBundle cell) throws Exception {
+        public Builder addCell(CurrencyBundle cell) throws Exception {
             var denomination = cell.getBankNoteDenomination();
             if (cells.containsKey(denomination)) {
                 throw new Exception(String.format("ATM already has cell with denomination of %s", denomination));

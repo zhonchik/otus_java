@@ -4,9 +4,9 @@ package ru.otus;
 public class CheckAtm {
     public static void main(String... args) throws Exception {
         var atm = Atm.newBuilder()
-                .addCell(new MutableCurrencyBundle(Denomination.D100, 5))
-                .addCell(new MutableCurrencyBundle(Denomination.D500, 3))
-                .addCell(new MutableCurrencyBundle(Denomination.D1000, 2))
+                .addCell(new CurrencyBundle(Denomination.D100, 5))
+                .addCell(new CurrencyBundle(Denomination.D500, 3))
+                .addCell(new CurrencyBundle(Denomination.D1000, 2))
                 .build();
         System.out.println(atm);
         System.out.println(atm.getAmount());
