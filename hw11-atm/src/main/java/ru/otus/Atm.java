@@ -6,13 +6,19 @@ import java.util.List;
 import java.util.TreeMap;
 
 public class Atm {
-    private final TreeMap<Denomination, MoneyBundle> cells = new TreeMap<>(Collections.reverseOrder());
+    private final TreeMap<Denomination, MoneyBundle> cells;
 
-    public static Builder newBuilder() {
-        return new Atm().new Builder();
+    public Atm(TreeMap<Denomination, MoneyBundle> cells) {
+        this.cells = cells;
     }
 
-    public class Builder {
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final TreeMap<Denomination, MoneyBundle> cells = new TreeMap<>(Collections.reverseOrder());
+
         private Builder() {
         }
 
@@ -21,12 +27,12 @@ public class Atm {
             if (cells.containsKey(denomination)) {
                 throw new Exception(String.format("ATM already has cell with denomination of %s", denomination));
             }
-            Atm.this.cells.put(cell.getBankNoteDenomination(), cell);
+            cells.put(cell.getBankNoteDenomination(), cell);
             return this;
         }
 
         public Atm build() {
-            return Atm.this;
+            return new Atm(cells);
         }
     }
 
