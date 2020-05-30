@@ -32,6 +32,10 @@ public class MoneyBundle {
         bankNotesCount -= count;
     }
 
+    public MoneyBundle copy() {
+        return new MoneyBundle(bankNoteDenomination, bankNotesCount);
+    }
+
     public String toString() {
         return String.format("Bundle(%s: %d)", bankNoteDenomination.name(), bankNotesCount);
     }
