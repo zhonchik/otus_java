@@ -7,5 +7,5 @@ public interface JdbcMapper<T> {
 
     void insertOrUpdate(T objectData);
 
-    T findById(long id, Class<T> clazz);
+    T findById(long id);
 }

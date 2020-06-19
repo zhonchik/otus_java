@@ -70,7 +70,7 @@ public class SessionManagerJdbc implements SessionManager {
     private void checkConnection() {
         try {
             if (connection == null || !connection.isValid(TIMEOUT_IN_SECONDS)) {
-                throw new SessionManagerException("Connection is invalid");
+                throw new SessionManagerException(String.format("Connection is invalid %s", connection));
             }
         } catch (SQLException ex) {
             throw new SessionManagerException(ex);
