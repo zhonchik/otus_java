@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow'
+}
+
+sourceCompatibility = JavaVersion.VERSION_13
+targetCompatibility = JavaVersion.VERSION_13
+
+dependencies {
+    dependencies {
+        implementation 'com.h2database:h2:1.4.200'
+        implementation 'ch.qos.logback:logback-classic:1.2.3'
+    }
+}
+
+shadowJar {
+    archiveBaseName.set('hw17-jdbc')
+    archiveVersion.set('0.1')
+    archiveClassifier.set('')
+}
+
+mainClassName = 'ru.otus.DbServiceDemo'
+
+tasks.build.dependsOn tasks.shadowJar
