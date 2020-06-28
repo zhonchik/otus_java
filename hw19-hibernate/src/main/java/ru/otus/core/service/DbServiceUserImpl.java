@@ -19,17 +19,18 @@ public class DbServiceUserImpl implements DBServiceUser {
 
     @Override
     public long saveUser(User user) {
+        logger.info("Saving user {}", user);
         try (SessionManager sessionManager = userDao.getSessionManager()) {
             sessionManager.beginSession();
             try {
                 userDao.insertOrUpdate(user);
-                long userId = user.getId();
+                long id = user.getId();
                 sessionManager.commitSession();
-
-                logger.info("created user: {}", userId);
-                return userId;
+                user.setId(id);
+                logger.info("User saved with id={}", id);
+                return id;
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                logger.error("Failed to save user", e);
                 sessionManager.rollbackSession();
                 throw new DbServiceException(e);
             }
@@ -39,15 +40,15 @@ public class DbServiceUserImpl implements DBServiceUser {
 
     @Override
     public Optional<User> getUser(long id) {
+        logger.info("Getting user with id={}", id);
         try (SessionManager sessionManager = userDao.getSessionManager()) {
             sessionManager.beginSession();
             try {
-                Optional<User> userOptional = userDao.findById(id);
-
-                logger.info("user: {}", userOptional.orElse(null));
-                return userOptional;
+                var user = userDao.findById(id);
+                logger.info("Got user: {}", user);
+                return user;
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                logger.error("Failed to get user", e);
                 sessionManager.rollbackSession();
             }
             return Optional.empty();
