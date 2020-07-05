@@ -32,3 +32,10 @@ shadowJar {
 mainClassName = 'ru.otus.DbServiceDemo'
 
 tasks.build.dependsOn tasks.shadowJar
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
