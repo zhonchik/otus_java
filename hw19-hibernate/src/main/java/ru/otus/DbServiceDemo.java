@@ -14,7 +14,7 @@ import ru.otus.hibernate.HibernateUtils;
 import ru.otus.hibernate.dao.UserDaoHibernate;
 import ru.otus.hibernate.sessionmanager.SessionManagerHibernate;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 
 public class DbServiceDemo {
@@ -33,7 +33,12 @@ public class DbServiceDemo {
         DBServiceUser dbServiceUser = new DbServiceUserImpl(userDao);
 
         logger.info("Creating user");
-        var user = new User(0, "Some name", new AddressDataSet(0, "Some street"), new ArrayList<>());
+        var user = new User(
+                0,
+                "Some name",
+                new AddressDataSet(0, "Some street"),
+                Collections.singletonList(new PhoneDataSet(0, "Some phone number"))
+        );
         dbServiceUser.saveUser(user);
         Optional<User> userOptional = dbServiceUser.getUser(user.getId());
 
@@ -43,7 +48,7 @@ public class DbServiceDemo {
 
             logger.info("Updating user");
             u.setName("Another name");
-            u.getPhones().add(new PhoneDataSet(0, "some phone number"));
+            u.getPhones().add(new PhoneDataSet(0, "Another phone number"));
             dbServiceUser.saveUser(u);
             Optional<User> mayBeUpdatedUser = dbServiceUser.getUser(u.getId());
             logger.info("User updated: {}", mayBeUpdatedUser);

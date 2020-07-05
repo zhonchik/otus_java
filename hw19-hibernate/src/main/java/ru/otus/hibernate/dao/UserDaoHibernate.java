@@ -56,7 +56,6 @@ public class UserDaoHibernate implements UserDao {
         try {
             Session hibernateSession = currentSession.getHibernateSession();
             hibernateSession.merge(user);
-            hibernateSession.flush();
         } catch (Exception e) {
             logger.error("Failed to update user", e);
             throw new UserDaoException(e);

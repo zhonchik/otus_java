@@ -14,6 +14,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "users")
 public class User {
@@ -31,53 +38,6 @@ public class User {
     private AddressDataSet address;
 
     @OneToMany(targetEntity = PhoneDataSet.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "phone_id")
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
     private List<PhoneDataSet> phones;
-
-    public User() {
-    }
-
-    public User(long id, String name, AddressDataSet address, List<PhoneDataSet> phones) {
-        this.id = id;
-        this.name = name;
-        this.address = address;
-        this.phones = phones;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public AddressDataSet getAddress() {
-        return address;
-    }
-
-    public void setAddress(AddressDataSet address) {
-        this.address = address;
-    }
-
-    public List<PhoneDataSet> getPhones() {
-        return phones;
-    }
-
-    public void setPhones(List<PhoneDataSet> phones) {
-        this.phones = phones;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("User{id=%d, name=%s, address=%s, phones=%s}", id, name, address, phones);
-    }
 }

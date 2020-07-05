@@ -26,7 +26,6 @@ public class DbServiceUserImpl implements DBServiceUser {
                 userDao.insertOrUpdate(user);
                 long id = user.getId();
                 sessionManager.commitSession();
-                user.setId(id);
                 logger.info("User saved with id={}", id);
                 return id;
             } catch (Exception e) {
