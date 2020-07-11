@@ -7,6 +7,9 @@ targetCompatibility = JavaVersion.VERSION_13
 
 dependencies {
     implementation("org.reflections:reflections:0.9.12")
+
+    compileOnly 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
 }
 
 compileJava.options.encoding = 'UTF-8'
