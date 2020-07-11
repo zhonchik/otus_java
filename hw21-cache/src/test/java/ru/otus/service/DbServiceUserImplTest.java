@@ -11,6 +11,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import ru.otus.cache.HwCache;
 import ru.otus.core.dao.UserDao;
 import ru.otus.core.model.AddressDataSet;
 import ru.otus.core.model.PhoneDataSet;
@@ -41,6 +42,9 @@ class DbServiceUserImplTest {
     private SessionManager sessionManager;
 
     @Mock
+    private HwCache<String, User> dummyCache;
+
+    @Mock
     private UserDao userDao;
 
     private DbServiceUserImpl dbServiceUser;
@@ -51,7 +55,7 @@ class DbServiceUserImplTest {
     void setUp() {
         given(userDao.getSessionManager()).willReturn(sessionManager);
         inOrder = inOrder(userDao, sessionManager);
-        dbServiceUser = new DbServiceUserImpl(userDao);
+        dbServiceUser = new DbServiceUserImpl(userDao, dummyCache);
     }
 
     @Test

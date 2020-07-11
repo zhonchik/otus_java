@@ -3,6 +3,11 @@ package ru.otus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import ru.otus.cache.HwCache;
 import ru.otus.core.dao.UserDao;
 import ru.otus.core.model.PhoneDataSet;
 import ru.otus.core.model.User;
@@ -17,7 +22,11 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Демо работы с hibernate (с абстракциями) должно ")
+@ExtendWith(MockitoExtension.class)
 public class WithAbstractionsTest extends AbstractHibernateTest {
+
+    @Mock(stubOnly = true)
+    private HwCache<String, User> dummyCache;
 
     private DBServiceUser dbServiceUser;
 
@@ -27,7 +36,7 @@ public class WithAbstractionsTest extends AbstractHibernateTest {
         super.setUp();
         SessionManagerHibernate sessionManager = new SessionManagerHibernate(sessionFactory);
         UserDao userDao = new UserDaoHibernate(sessionManager);
-        dbServiceUser = new DbServiceUserImpl(userDao);
+        dbServiceUser = new DbServiceUserImpl(userDao, dummyCache);
     }
 
     @Test

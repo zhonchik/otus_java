@@ -24,7 +24,7 @@ dependencies {
 }
 
 shadowJar {
-    archiveBaseName.set('hw17-jdbc')
+    archiveBaseName.set('hw21-cache')
     archiveVersion.set('0.1')
     archiveClassifier.set('')
 }
@@ -34,6 +34,7 @@ mainClassName = 'ru.otus.CacheDemo'
 tasks.build.dependsOn tasks.shadowJar
 
 test {
+    maxHeapSize = "64m"
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"

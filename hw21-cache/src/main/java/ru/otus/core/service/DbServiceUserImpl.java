@@ -2,6 +2,8 @@ package ru.otus.core.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ru.otus.cache.HwCache;
 import ru.otus.core.dao.UserDao;
 import ru.otus.core.model.User;
 import ru.otus.core.sessionmanager.SessionManager;
@@ -9,12 +11,14 @@ import ru.otus.core.sessionmanager.SessionManager;
 import java.util.Optional;
 
 public class DbServiceUserImpl implements DBServiceUser {
-    private static Logger logger = LoggerFactory.getLogger(DbServiceUserImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(DbServiceUserImpl.class);
 
     private final UserDao userDao;
+    private final HwCache<String, User> cache;
 
-    public DbServiceUserImpl(UserDao userDao) {
+    public DbServiceUserImpl(UserDao userDao, HwCache<String, User> cache) {
         this.userDao = userDao;
+        this.cache = cache;
     }
 
     @Override
@@ -26,6 +30,7 @@ public class DbServiceUserImpl implements DBServiceUser {
                 userDao.insertOrUpdate(user);
                 long id = user.getId();
                 sessionManager.commitSession();
+                cache.put(Long.toString(id), user);
                 logger.info("User saved with id={}", id);
                 return id;
             } catch (Exception e) {
@@ -43,7 +48,15 @@ public class DbServiceUserImpl implements DBServiceUser {
         try (SessionManager sessionManager = userDao.getSessionManager()) {
             sessionManager.beginSession();
             try {
-                var user = userDao.findById(id);
+                var cacheUser = cache.get(Long.toString(id));
+                var user = Optional.ofNullable(cacheUser).or(() -> {
+                    var uo = userDao.findById(id);
+                    if (uo.isPresent()) {
+                        var u = uo.get();
+                        cache.put(Long.toString(u.getId()), u);
+                    }
+                    return uo;
+                });
                 logger.info("Got user: {}", user);
                 return user;
             } catch (Exception e) {
