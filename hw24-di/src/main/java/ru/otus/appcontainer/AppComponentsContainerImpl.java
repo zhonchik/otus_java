@@ -68,7 +68,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
             Object component;
 
-            if (params.size() == 0) {
+            if (params.isEmpty()) {
                 component = method.invoke(configInstance);
             }
             else {
