@@ -29,6 +29,16 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         processConfig(initialConfigClass);
     }
 
+    @Override
+    public <C> C getAppComponent(Class<C> componentClass) {
+        return (C) appComponentsByType.get(componentClass);
+    }
+
+    @Override
+    public <C> C getAppComponent(String componentName) {
+        return (C) appComponentsByName.get(componentName);
+    }
+
     private void processConfig(Class<?> configClass) throws Exception {
         checkConfigClass(configClass);
         var componentsInfo = getComponentsInfo(configClass);
@@ -84,15 +94,5 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
         if (!configClass.isAnnotationPresent(AppComponentsContainerConfig.class)) {
             throw new IllegalArgumentException(String.format("Given class is not config %s", configClass.getName()));
         }
-    }
-
-    @Override
-    public <C> C getAppComponent(Class<C> componentClass) {
-        return (C) appComponentsByType.get(componentClass);
-    }
-
-    @Override
-    public <C> C getAppComponent(String componentName) {
-        return (C) appComponentsByName.get(componentName);
     }
 }
