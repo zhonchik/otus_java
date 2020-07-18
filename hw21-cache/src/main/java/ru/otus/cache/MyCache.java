@@ -48,7 +48,12 @@ public class MyCache<K, V> implements HwCache<K, V> {
 
     private void notifyListeners(K key, V value, String action) {
         for (var listener : listeners) {
-            listener.notify(key, value, action);
+            try {
+                listener.notify(key, value, action);
+            }
+            catch (Exception e) {
+                log.warning("Failed to notify listener");
+            }
         }
     }
 }
