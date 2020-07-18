@@ -23,6 +23,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     }
 
     private final Map<String, Object> appComponentsByName = new HashMap<>();
+    private final Map<Class<?>, Object> appComponentsByType = new HashMap<>();
 
     public AppComponentsContainerImpl(Class<?> initialConfigClass) throws Exception {
         processConfig(initialConfigClass);
@@ -35,7 +36,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
     }
 
     private List<ComponentInfo> getComponentsInfo(Class<?> configClass) {
-        var componentsInfo = new ArrayList<ComponentInfo>();
+        var componentInfoList = new ArrayList<ComponentInfo>();
         for (var method : configClass.getMethods()) {
             if (!method.isAnnotationPresent(AppComponent.class)) {
                 continue;
@@ -43,24 +44,24 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
             var annotation = method.getAnnotation(AppComponent.class);
             var order = annotation.order();
             var name = annotation.name();
-            componentsInfo.add(new ComponentInfo(order, name, method));
+            componentInfoList.add(new ComponentInfo(order, name, method));
         }
-        componentsInfo.sort(Comparator.comparingInt(ComponentInfo::getOrder));
-        return componentsInfo;
+        componentInfoList.sort(Comparator.comparingInt(ComponentInfo::getOrder));
+        return componentInfoList;
     }
 
     private void createComponents(Class<?> configClass, List<ComponentInfo> componentsInfo) throws Exception {
-        var config = configClass.getConstructor().newInstance();
+        var configInstance = configClass.getConstructor().newInstance();
         for (var componentInfo : componentsInfo) {
             var method = componentInfo.getMethod();
             var name = componentInfo.getName();
             var params = new ArrayList<>();
 
             for (var param: method.getParameters()) {
-                var paramTypeName = param.getType().getTypeName();
-                var component = appComponentsByName.get(paramTypeName);
+                var paramType = param.getType();
+                var component = appComponentsByType.get(paramType);
                 if (component == null) {
-                    throw new Exception(String.format("No suitable component found for %s", paramTypeName));
+                    throw new Exception(String.format("No suitable component found for %s", paramType));
                 }
                 params.add(component);
             }
@@ -68,14 +69,14 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
             Object component;
 
             if (params.size() == 0) {
-                component = method.invoke(config);
+                component = method.invoke(configInstance);
             }
             else {
                 Object[] pa = params.toArray();
-                component = method.invoke(config, pa);
+                component = method.invoke(configInstance, pa);
             }
             appComponentsByName.put(name, component);
-            appComponentsByName.put(method.getReturnType().getName(), component);
+            appComponentsByType.put(method.getReturnType(), component);
         }
     }
 
@@ -87,7 +88,7 @@ public class AppComponentsContainerImpl implements AppComponentsContainer {
 
     @Override
     public <C> C getAppComponent(Class<C> componentClass) {
-        return (C) appComponentsByName.get(componentClass.getName());
+        return (C) appComponentsByType.get(componentClass);
     }
 
     @Override
