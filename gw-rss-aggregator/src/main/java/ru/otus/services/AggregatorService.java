@@ -1,9 +1,5 @@
 package ru.otus.services;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -14,10 +10,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import ru.otus.controllers.AggregatorController;
+import ru.otus.controllers.AggregatorControllerImpl;
 import ru.otus.feeds.FeedReaderProperties;
-import ru.otus.feeds.MultiFeedReader;
-import ru.otus.model.Chat;
-import ru.otus.model.Feed;
+import ru.otus.processors.MessageProcessor;
 
 @Component
 @EnableConfigurationProperties({AggregatorServiceProperties.class, FeedReaderProperties.class})
@@ -26,28 +22,30 @@ public class AggregatorService implements InitializingBean, DisposableBean {
     private ExecutorService executorService;
     private final AggregatorServiceProperties serviceProperties;
     private final FeedReaderProperties feedReaderProperties;
+    private final MessageProcessor messageProcessor;
+    private final AggregatorController controller;
+
 
     public AggregatorService(AggregatorServiceProperties serviceProperties, FeedReaderProperties feedReaderProperties) {
         this.serviceProperties = serviceProperties;
         this.feedReaderProperties = feedReaderProperties;
+
+        controller = new AggregatorControllerImpl(serviceProperties.getBotToken());
+        messageProcessor = new MessageProcessor(controller);
     }
 
-    public void afterPropertiesSet() throws MalformedURLException {
-        // Just for feed reader check
-        // To be removed
-        List<Feed> feeds = new ArrayList<>();
-        List<Chat> chats = new ArrayList<>();
-        chats.add(new Chat("chat0", 123));
-        feeds.add(new Feed(new URL("https://habr.com/ru/rss/all/all/"), chats));
-        // End of feed reader check
-
+    public void afterPropertiesSet() {
         executorService = Executors.newCachedThreadPool();
         executorService.submit(() -> {
             while (!Thread.currentThread().isInterrupted()) {
-                try (var reader = new MultiFeedReader(feedReaderProperties, feeds)) {
+                try (var reader = controller.newFeedReader(feedReaderProperties)) {
                     while (!Thread.currentThread().isInterrupted()) {
                         var updates = reader.getUpdates();
+                        if (updates.isEmpty()) {
+                            continue;
+                        }
                         log.info("{}", updates);
+                        messageProcessor.process(updates);
                         Thread.sleep(serviceProperties.getUpdateInterval().toMillis());
                     }
                 }

@@ -1,7 +1,9 @@
 package ru.otus.feeds;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,6 +31,11 @@ public class MultiFeedReader implements FeedReader {
         for (var feed : feeds) {
             addFeed(feed);
         }
+    }
+
+    @Override
+    public boolean checkUrl(URL url) {
+        return new SingleFeedReader(new Feed(url, new HashSet<>())).checkUrl(url);
     }
 
     public void addFeed(Feed feed) {

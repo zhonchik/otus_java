@@ -9,9 +9,11 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.otus.model.Feed;
 import ru.otus.model.Message;
 
+@Slf4j
 public class SingleFeedReader implements FeedReader {
     private final Feed feed;
     private final SyndFeedInput input;
@@ -19,6 +21,21 @@ public class SingleFeedReader implements FeedReader {
     public SingleFeedReader(Feed feed) {
         this.feed = feed;
         input = new SyndFeedInput();
+    }
+
+    @Override
+    public boolean checkUrl(URL url) {
+        try {
+            input.build(new XmlReader(feed.getUrl())).getEntries();
+        } catch (Exception e) {
+            log.error("Feed check failed", e);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void addFeed(Feed feed) {
     }
 
     @Override

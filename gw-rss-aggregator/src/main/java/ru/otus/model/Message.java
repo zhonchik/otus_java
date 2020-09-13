@@ -6,6 +6,6 @@ import lombok.Data;
 
 @Data
 public class Message {
-    private final Chat chat;
+    private final long chatId;
     private final URL link;
 }

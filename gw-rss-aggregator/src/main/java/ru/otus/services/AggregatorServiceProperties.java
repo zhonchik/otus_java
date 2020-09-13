@@ -10,4 +10,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AggregatorServiceProperties {
     private Duration updateInterval = Duration.ofSeconds(1);
     private Duration shutdownTimeout = Duration.ofSeconds(1);
+    private String botToken;
 }
