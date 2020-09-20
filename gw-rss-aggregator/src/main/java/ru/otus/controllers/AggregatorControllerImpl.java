@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.otus.bot.commands.SubCommandResult;
 import ru.otus.bot.commands.CommandsHandler;
-import ru.otus.feeds.FeedReader;
 import ru.otus.feeds.FeedReaderProperties;
 import ru.otus.feeds.MultiFeedReader;
 import ru.otus.model.Message;
@@ -29,7 +28,7 @@ public class AggregatorControllerImpl implements AggregatorController {
 
     private final Storage storage;
     private CommandsHandler commandsHandler;
-    private FeedReader feedReader;
+    private MultiFeedReader feedReader;
 
     public AggregatorControllerImpl(Storage storage, AggregatorServiceProperties serviceProperties) {
         this.storage = storage;
@@ -110,7 +109,7 @@ public class AggregatorControllerImpl implements AggregatorController {
     }
 
     @Override
-    public FeedReader newFeedReader(FeedReaderProperties properties) {
+    public MultiFeedReader newFeedReader(FeedReaderProperties properties) {
         feedReader = new MultiFeedReader(properties, storage.getFeeds());
         return feedReader;
     }

@@ -18,7 +18,7 @@ import ru.otus.model.Feed;
 import ru.otus.model.Message;
 
 @Slf4j
-public class MultiFeedReader implements FeedReader {
+public class MultiFeedReader implements AutoCloseable {
     private final ExecutorService executorService;
     private final FeedReaderProperties readerProperties;
     private final LinkedBlockingQueue<Message> messageQueue;
@@ -33,16 +33,14 @@ public class MultiFeedReader implements FeedReader {
         }
     }
 
-    @Override
     public boolean checkUrl(URL url) {
-        return new SingleFeedReader(new Feed(url, new HashSet<>())).checkUrl(url);
+        return new SingleFeedReader(new Feed(url, new HashSet<>())).checkUrl();
     }
 
     public void addFeed(Feed feed) {
         executorService.submit(() -> readFeed(feed));
     }
 
-    @Override
     public List<Message> getUpdates() {
         List<Message> updates = new ArrayList<>();
         var message = messageQueue.poll();
@@ -53,7 +51,6 @@ public class MultiFeedReader implements FeedReader {
         return updates;
     }
 
-    @Override
     public void close() throws Exception {
         closed.set(true);
         executorService.awaitTermination(readerProperties.getShutdownTimeout().toMillis(), TimeUnit.MILLISECONDS);
@@ -61,7 +58,8 @@ public class MultiFeedReader implements FeedReader {
 
     private void readFeed(Feed feed) {
         while (!closed.get()) {
-            try (var reader = new SingleFeedReader(feed)) {
+            try {
+                var reader = new SingleFeedReader(feed);
                 while (!closed.get()) {
                     if (feed.getChats().isEmpty()) {
                         log.info("No chats for feed {}", feed);

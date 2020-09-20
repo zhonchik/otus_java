@@ -3,8 +3,8 @@ package ru.otus.controllers;
 import java.util.List;
 
 import ru.otus.bot.commands.SubCommandResult;
-import ru.otus.feeds.FeedReader;
 import ru.otus.feeds.FeedReaderProperties;
+import ru.otus.feeds.MultiFeedReader;
 import ru.otus.model.Message;
 
 public interface AggregatorController {
@@ -16,7 +16,7 @@ public interface AggregatorController {
 
     boolean sendTextMessage(long chatId, String messageText);
 
-    FeedReader newFeedReader(FeedReaderProperties properties);
+    MultiFeedReader newFeedReader(FeedReaderProperties properties);
     void markAsProcessed(List<Message> messages);
     boolean isProcessed(Message message);
 }

@@ -14,7 +14,7 @@ import ru.otus.model.Feed;
 import ru.otus.model.Message;
 
 @Slf4j
-public class SingleFeedReader implements FeedReader {
+public class SingleFeedReader {
     private final Feed feed;
     private final SyndFeedInput input;
 
@@ -23,8 +23,7 @@ public class SingleFeedReader implements FeedReader {
         input = new SyndFeedInput();
     }
 
-    @Override
-    public boolean checkUrl(URL url) {
+    public boolean checkUrl() {
         try {
             input.build(new XmlReader(feed.getUrl())).getEntries();
         } catch (Exception e) {
@@ -34,11 +33,6 @@ public class SingleFeedReader implements FeedReader {
         return true;
     }
 
-    @Override
-    public void addFeed(Feed feed) {
-    }
-
-    @Override
     public List<Message> getUpdates() throws IOException, FeedException {
         List<Message> updates = new ArrayList<>();
         for (var item : input.build(new XmlReader(feed.getUrl())).getEntries()) {
@@ -47,9 +41,5 @@ public class SingleFeedReader implements FeedReader {
             }
         }
         return updates;
-    }
-
-    @Override
-    public void close() {
     }
 }
