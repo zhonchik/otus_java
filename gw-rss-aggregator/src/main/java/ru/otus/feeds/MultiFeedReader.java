@@ -1,7 +1,6 @@
 package ru.otus.feeds;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,8 +32,8 @@ public class MultiFeedReader implements AutoCloseable {
         }
     }
 
-    public boolean checkUrl(URL url) {
-        return new SingleFeedReader(new Feed(url, new HashSet<>())).checkUrl();
+    public boolean checkUrl(String url) {
+        return new SingleFeedReader(Feed.NewFeed(url, new HashSet<>())).checkUrl();
     }
 
     public void addFeed(Feed feed) {
@@ -57,10 +56,12 @@ public class MultiFeedReader implements AutoCloseable {
     }
 
     private void readFeed(Feed feed) {
+        log.info("Starting to read feed {}", feed);
         while (!closed.get()) {
             try {
                 var reader = new SingleFeedReader(feed);
                 while (!closed.get()) {
+                    log.info("Checking {}", feed);
                     if (feed.getChats().isEmpty()) {
                         log.info("No chats for feed {}", feed);
                         return;

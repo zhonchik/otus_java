@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
@@ -25,7 +26,7 @@ public class SingleFeedReader {
 
     public boolean checkUrl() {
         try {
-            input.build(new XmlReader(feed.getUrl())).getEntries();
+            getEntries();
         } catch (Exception e) {
             log.error("Feed check failed", e);
             return false;
@@ -35,13 +36,18 @@ public class SingleFeedReader {
 
     public List<Message> getUpdates() throws IOException, FeedException {
         List<Message> updates = new ArrayList<>();
-        var reader = new XmlReader(feed.getUrl());
-        var feedData = input.build(reader);
-        for (var item : feedData.getEntries()) {
+        for (var item : getEntries()) {
             for (var chat : feed.getChats()) {
-                updates.add(new Message(chat, new URL(item.getLink())));
+                updates.add(Message.NewMessage(chat, item.getLink()));
             }
         }
         return updates;
+    }
+
+    private List<SyndEntry> getEntries() throws IOException, FeedException {
+        URL url = new URL(feed.getUrl());
+        var reader = new XmlReader(url);
+        var feedData = input.build(reader);
+        return feedData.getEntries();
     }
 }

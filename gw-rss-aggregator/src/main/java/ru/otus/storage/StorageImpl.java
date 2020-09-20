@@ -1,80 +1,99 @@
 package ru.otus.storage;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import org.dizitart.no2.Nitrite;
+import org.dizitart.no2.objects.ObjectRepository;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import static org.dizitart.no2.objects.filters.ObjectFilters.and;
+import static org.dizitart.no2.objects.filters.ObjectFilters.eq;
+
 import ru.otus.model.Feed;
 import ru.otus.model.Message;
 
 @Component
+@EnableConfigurationProperties(StorageProperties.class)
 public class StorageImpl implements Storage {
-    private final Set<Long> chats = new HashSet<>();
-    private final Map<URL, Feed> feeds = new HashMap<>();
-    private final Set<Message> processedMessages = new HashSet<>();
+    ObjectRepository<Feed> feedRepository;
+    ObjectRepository<Message> processedMessageRepository;
 
-    @Override
-    synchronized public void addChat(long chatId) {
-        chats.add(chatId);
+    public StorageImpl(StorageProperties properties) {
+        Nitrite db = Nitrite.builder()
+                .compressed()
+                .filePath(properties.getFilePath())
+                .openOrCreate(properties.getUser(), properties.getPassword());
+
+        feedRepository = db.getRepository(Feed.class);
+        processedMessageRepository = db.getRepository(Message.class);
     }
 
     @Override
-    synchronized public void removeChat(long chatId) {
-        for (var feed : feeds.values()) {
+    public void removeChat(long chatId) {
+        for (var feed : feedRepository.find()) {
             feed.getChats().remove(chatId);
+            feedRepository.update(feed);
         }
-        chats.remove(chatId);
     }
 
     @Override
-    public boolean hasChat(long chatId) {
-        return chats.contains(chatId);
-    }
-
-    @Override
-    synchronized public boolean subscribe(long chatId, URL url) {
-        boolean result = false;
-        var feed = feeds.get(url);
+    public void subscribe(long chatId, String url) {
+        var feed = feedRepository.find(eq("url", url)).firstOrDefault();
         if (feed == null) {
-            feed = new Feed(url, new HashSet<>());
-            feeds.put(url, feed);
-            result = true;
+            feed = Feed.NewFeed(url, new HashSet<>());
+            feed.getChats().add(chatId);
+            feedRepository.insert(feed);
+        } else {
+            feed.getChats().add(chatId);
+            feedRepository.update(feed);
         }
-        feed.getChats().add(chatId);
-        return result;
     }
 
     @Override
-    synchronized public boolean unsubscribe(long chatId, URL url) {
-        var feed = feeds.get(url);
+    public void unsubscribe(long chatId, String url) {
+        var feed = feedRepository.find(eq("url", url)).firstOrDefault();
         if (feed == null) {
-            return false;
+            return;
         }
-        return feed.getChats().remove(chatId);
+        boolean result = feed.getChats().remove(chatId);
+        feedRepository.update(feed);
     }
 
     @Override
-    public Feed getFeed(URL url) {
-        return feeds.get(url);
+    public Feed getFeed(String url) {
+        return feedRepository.find(eq("url", url)).firstOrDefault();
     }
 
     @Override
     public List<Feed> getFeeds() {
-        return new ArrayList<>(feeds.values());
+        var feeds = new ArrayList<Feed>();
+        for (var feed : feedRepository.find()) {
+            feeds.add(feed);
+        }
+        return feeds;
     }
 
     @Override
-    synchronized public void markAsProcessed(List<Message> messages) {
-        processedMessages.addAll(messages);
+    public void markAsProcessed(List<Message> messages) {
+        for (var message : messages) {
+            if (!isProcessed(message)) {
+                processedMessageRepository.insert(message);
+            }
+        }
     }
 
     @Override
     public boolean isProcessed(Message message) {
-        return processedMessages.contains(message);
+        Message processedMessage = processedMessageRepository.find(
+                and(
+                        eq("chatId", message.getChatId()),
+                        eq("link", message.getLink())
+                )
+        ).firstOrDefault();
+        return processedMessage != null;
     }
 }
