@@ -13,7 +13,7 @@ public class UnsubscribeCommand extends BotCommand {
     private final AggregatorController controller;
 
     public UnsubscribeCommand(AggregatorController controller) {
-        super("unsubscribe", "Unsubscribe from feed. Few feeds line separated supported");
+        super("unsubscribe", "Unsubscribe from feed. Few feeds space separated supported");
         this.controller = controller;
     }
 

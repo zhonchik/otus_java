@@ -23,6 +23,7 @@ public class HelpCommand extends BotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
+        log.info("Help command from {}", chat);
         StringBuilder helpMessageBuilder = new StringBuilder();
         for (IBotCommand botCommand : commandRegistry.getRegisteredCommands()) {
             helpMessageBuilder.append(botCommand.toString()).append("\n");
