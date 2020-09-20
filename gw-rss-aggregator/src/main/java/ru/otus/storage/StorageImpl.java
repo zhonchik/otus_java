@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.stereotype.Component;
 import ru.otus.model.Feed;
 import ru.otus.model.Message;
 
+@Component
 public class StorageImpl implements Storage {
     private final Set<Long> chats = new HashSet<>();
     private final Map<URL, Feed> feeds = new HashMap<>();

@@ -11,7 +11,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 
 import ru.otus.controllers.AggregatorController;
-import ru.otus.controllers.AggregatorControllerImpl;
 import ru.otus.feeds.FeedReaderProperties;
 import ru.otus.processors.MessageProcessor;
 
@@ -26,12 +25,16 @@ public class AggregatorService implements InitializingBean, DisposableBean {
     private final AggregatorController controller;
 
 
-    public AggregatorService(AggregatorServiceProperties serviceProperties, FeedReaderProperties feedReaderProperties) {
+    public AggregatorService(
+            AggregatorServiceProperties serviceProperties,
+            AggregatorController controller,
+            MessageProcessor messageProcessor,
+            FeedReaderProperties feedReaderProperties
+    ) {
         this.serviceProperties = serviceProperties;
+        this.controller = controller;
+        this.messageProcessor = messageProcessor;
         this.feedReaderProperties = feedReaderProperties;
-
-        controller = new AggregatorControllerImpl(serviceProperties.getBotToken());
-        messageProcessor = new MessageProcessor(controller);
     }
 
     public void afterPropertiesSet() {

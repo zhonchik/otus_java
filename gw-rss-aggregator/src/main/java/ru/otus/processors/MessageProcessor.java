@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.otus.controllers.AggregatorController;
 import ru.otus.model.Message;
 
+@Component
 @Slf4j
 public class MessageProcessor {
     private final AggregatorController controller;

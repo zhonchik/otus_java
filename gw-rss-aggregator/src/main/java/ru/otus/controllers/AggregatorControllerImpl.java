@@ -1,6 +1,8 @@
 package ru.otus.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -11,13 +13,15 @@ import ru.otus.feeds.FeedReader;
 import ru.otus.feeds.FeedReaderProperties;
 import ru.otus.feeds.MultiFeedReader;
 import ru.otus.model.Message;
+import ru.otus.services.AggregatorServiceProperties;
 import ru.otus.storage.Storage;
-import ru.otus.storage.StorageImpl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+@Component
+@EnableConfigurationProperties(AggregatorServiceProperties.class)
 @Slf4j
 public class AggregatorControllerImpl implements AggregatorController {
     private final static String STATUS_OK = "\u2714";
@@ -27,14 +31,14 @@ public class AggregatorControllerImpl implements AggregatorController {
     private CommandsHandler commandsHandler;
     private FeedReader feedReader;
 
-    public AggregatorControllerImpl(String botToken) {
-        storage = new StorageImpl();
+    public AggregatorControllerImpl(Storage storage, AggregatorServiceProperties serviceProperties) {
+        this.storage = storage;
 
         try {
             ApiContextInitializer.init();
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
             try {
-                commandsHandler = new CommandsHandler(this, botToken);
+                commandsHandler = new CommandsHandler(this, serviceProperties.getBotToken());
                 telegramBotsApi.registerBot(commandsHandler);
             } catch (TelegramApiException e) {
                 log.error("Failed to register bot", e);
