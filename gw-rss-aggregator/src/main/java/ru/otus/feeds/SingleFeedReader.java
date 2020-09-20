@@ -35,7 +35,9 @@ public class SingleFeedReader {
 
     public List<Message> getUpdates() throws IOException, FeedException {
         List<Message> updates = new ArrayList<>();
-        for (var item : input.build(new XmlReader(feed.getUrl())).getEntries()) {
+        var reader = new XmlReader(feed.getUrl());
+        var feedData = input.build(reader);
+        for (var item : feedData.getEntries()) {
             for (var chat : feed.getChats()) {
                 updates.add(new Message(chat, new URL(item.getLink())));
             }
