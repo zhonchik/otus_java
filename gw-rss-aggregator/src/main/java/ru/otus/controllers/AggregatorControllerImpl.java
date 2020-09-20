@@ -20,8 +20,8 @@ import java.util.List;
 
 @Slf4j
 public class AggregatorControllerImpl implements AggregatorController {
-    private final static String STATUS_OK = "✅";
-    private final static String STATUS_ERR = "⚠️";
+    private final static String STATUS_OK = "\u2714";
+    private final static String STATUS_ERR = "\u2757";
 
     private final Storage storage;
     private CommandsHandler commandsHandler;
