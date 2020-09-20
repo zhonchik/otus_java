@@ -95,6 +95,7 @@ public class AggregatorControllerImpl implements AggregatorController {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(messageText);
+        message.setParseMode("html");
         try {
             commandsHandler.execute(message);
             return true;
