@@ -22,6 +22,7 @@ public class CommandsHandler extends TelegramLongPollingCommandBot {
         register(new StopCommand(controller));
         register(new SubscribeCommand(controller));
         register(new UnsubscribeCommand(controller));
+        register(new ListCommand(controller));
         HelpCommand helpCommand = new HelpCommand(controller,this);
         register(helpCommand);
 

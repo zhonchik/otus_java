@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import ru.otus.bot.commands.SubCommandResult;
 import ru.otus.bot.commands.CommandsHandler;
 import ru.otus.feeds.FeedReaderProperties;
@@ -134,6 +136,16 @@ public class AggregatorControllerImpl implements AggregatorController {
         chats.remove(chatId);
         storage.unsubscribe(chatId, url.toString());
         return new SubCommandResult(STATUS_OK, "");
+    }
+
+    @Override
+    public List<String> getChatFeeds(long chatId) {
+        var chatFeeds = new ArrayList<String>();
+        for (var feedUrl : feeds.keySet()) {
+            chatFeeds.add(feedUrl.toString());
+        }
+        Collections.sort(chatFeeds);
+        return chatFeeds;
     }
 
     @Override

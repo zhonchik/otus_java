@@ -13,6 +13,7 @@ public interface AggregatorController {
     boolean hasChat(long chatId);
     SubCommandResult trySubscribe(long chatId, String argument);
     SubCommandResult tryUnsubscribe(long chatId, String argument);
+    List<String> getChatFeeds(long chatId);
 
     boolean sendTextMessage(long chatId, String messageText);
 
