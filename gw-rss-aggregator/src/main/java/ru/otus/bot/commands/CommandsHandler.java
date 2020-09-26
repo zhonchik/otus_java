@@ -41,7 +41,7 @@ public class CommandsHandler extends TelegramLongPollingCommandBot {
 
         if (update.hasMessage()) {
             Message message = update.getMessage();
-            controller.sendTextMessage(message.getChatId(), "Bla bla bla");
+            controller.sendTextMessage(message.getChatId(), "Try /help to figure out my skills");
         }
     }
 
