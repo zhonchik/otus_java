@@ -17,11 +17,11 @@ import ru.otus.model.Message;
 
 @Component
 @EnableConfigurationProperties(StorageProperties.class)
-public class StorageImpl implements Storage {
+public class NitriteStorage implements Storage {
     private final ObjectRepository<Feed> feedRepository;
     private final ObjectRepository<Message> processedMessageRepository;
 
-    public StorageImpl(StorageProperties properties) {
+    public NitriteStorage(StorageProperties properties) {
         Nitrite db = Nitrite.builder()
                 .compressed()
                 .filePath(properties.getFilePath())
