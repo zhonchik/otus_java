@@ -1,0 +1,23 @@
+plugins {
+	id 'java'
+}
+
+sourceCompatibility = JavaVersion.VERSION_13
+targetCompatibility = JavaVersion.VERSION_13
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot:2.3.3.RELEASE'
+	implementation 'org.springframework.boot:spring-boot-autoconfigure:2.3.3.RELEASE'
+	implementation 'ch.qos.logback:logback-classic:1.2.3'
+	implementation 'com.rometools:rome:1.15.0'
+	implementation 'org.dizitart:nitrite:3.4.2'
+
+	compile 'org.yaml:snakeyaml:1.27'
+	compile "org.telegram:telegrambots:4.9.1"
+	compile "org.telegram:telegrambotsextensions:4.9.1"
+
+	compileOnly 'org.projectlombok:lombok:1.18.12'
+
+	annotationProcessor 'org.projectlombok:lombok:1.18.12'
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:2.3.3.RELEASE"
+}

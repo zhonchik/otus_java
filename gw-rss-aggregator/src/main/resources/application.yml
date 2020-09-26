@@ -1,0 +1,10 @@
+aggregator:
+  bot-token: BOT_TOKEN
+feeds:
+  update-interval: 30s
+  queue-offer-interval: 5s
+  shutdown-timeout: 10s
+storage:
+  file-path: "./storage.db"
+  user: user
+  password: password
