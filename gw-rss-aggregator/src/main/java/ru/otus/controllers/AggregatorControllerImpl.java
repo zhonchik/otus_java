@@ -52,7 +52,11 @@ public class AggregatorControllerImpl implements AggregatorController {
             ApiContextInitializer.init();
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
             try {
-                commandsHandler = new CommandsHandler(this, serviceProperties.getBotToken());
+                commandsHandler = new CommandsHandler(
+                        this,
+                        serviceProperties.getBotUserName(),
+                        serviceProperties.getBotToken()
+                );
                 telegramBotsApi.registerBot(commandsHandler);
             } catch (TelegramApiException e) {
                 log.error("Failed to register bot", e);
@@ -73,7 +77,8 @@ public class AggregatorControllerImpl implements AggregatorController {
         for (var feed : feeds.values()) {
             feed.getChats().remove(chatId);
         }
-        chats.remove(chatId);    }
+        chats.remove(chatId);
+    }
 
     @Override
     public boolean hasChat(long chatId) {

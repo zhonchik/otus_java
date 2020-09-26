@@ -10,12 +10,12 @@ import ru.otus.controllers.AggregatorController;
 @Slf4j
 public class CommandsHandler extends TelegramLongPollingCommandBot {
     private final AggregatorController controller;
+    private final String botUserName;
     private final String botToken;
 
-    public CommandsHandler(AggregatorController controller, String botToken) {
-        super();
-
+    public CommandsHandler(AggregatorController controller, String botUserName, String botToken) {
         this.controller = controller;
+        this.botUserName = botUserName;
         this.botToken = botToken;
 
         register(new StartCommand(controller));
@@ -33,7 +33,7 @@ public class CommandsHandler extends TelegramLongPollingCommandBot {
 
     @Override
     public String getBotUsername() {
-        return "";
+        return botUserName;
     }
 
     @Override
