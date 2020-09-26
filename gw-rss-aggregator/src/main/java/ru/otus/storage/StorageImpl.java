@@ -3,7 +3,6 @@ package ru.otus.storage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.dizitart.no2.Nitrite;
 import org.dizitart.no2.objects.ObjectRepository;
@@ -19,8 +18,8 @@ import ru.otus.model.Message;
 @Component
 @EnableConfigurationProperties(StorageProperties.class)
 public class StorageImpl implements Storage {
-    ObjectRepository<Feed> feedRepository;
-    ObjectRepository<Message> processedMessageRepository;
+    private final ObjectRepository<Feed> feedRepository;
+    private final ObjectRepository<Message> processedMessageRepository;
 
     public StorageImpl(StorageProperties properties) {
         Nitrite db = Nitrite.builder()
@@ -59,7 +58,7 @@ public class StorageImpl implements Storage {
         if (feed == null) {
             return;
         }
-        boolean result = feed.getChats().remove(chatId);
+        feed.getChats().remove(chatId);
         feedRepository.update(feed);
     }
 
