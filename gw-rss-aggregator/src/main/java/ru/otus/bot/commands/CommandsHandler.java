@@ -33,6 +33,9 @@ public class CommandsHandler extends TelegramLongPollingCommandBot {
 
     @Override
     public String getBotUsername() {
+        if (botUserName == null) {
+            return "";
+        }
         return botUserName;
     }
 
